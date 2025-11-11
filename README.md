@@ -21,23 +21,33 @@ make -C ext/tyco_ext
 bundle exec rake test    # or: LD_LIBRARY_PATH=../tyco-c/build rake test
 ```
 
-### Usage
-
-```ruby
-require_relative 'lib/tyco'
-
 data = Tyco.load_file('../tyco-test-suite/inputs/simple1.tyco')
-puts data['project'] # => "demo"
+## Quick Start
+
+This package includes a ready-to-use example Tyco file at:
+
+   example.tyco
+
+([View on GitHub](https://github.com/typedconfig/tyco-ruby/blob/main/example.tyco))
+
+You can load and parse this file using the Ruby Tyco API. Example usage:
+
 ```ruby
 require_relative 'lib/tyco'
 
-# Parse a Tyco configuration file
-context = Tyco.load_file('config.tyco')
+# Parse the bundled example.tyco file
+context = Tyco.load_file('example.tyco')
 
 # Access global configuration values
 globals = context['globals']
 environment = globals['environment']
 debug = globals['debug']
+timeout = globals['timeout']
+puts "env=#{environment} debug=#{debug} timeout=#{timeout}"
+# ... access objects, etc ...
+```
+
+See the [example.tyco](https://github.com/typedconfig/tyco-ruby/blob/main/example.tyco) file for the full configuration example.
 timeout = globals['timeout']
 
 # Get all instances as hashes
