@@ -21,42 +21,60 @@ make -C ext/tyco_ext
 bundle exec rake test    # or: LD_LIBRARY_PATH=../tyco-c/build rake test
 ```
 
-data = Tyco.load_file('../tyco-test-suite/inputs/simple1.tyco')
 ## Quick Start
 
-This package includes a ready-to-use example Tyco file at:
-
-   example.tyco
-
-([View on GitHub](https://github.com/typedconfig/tyco-ruby/blob/main/example.tyco))
-
-You can load and parse this file using the Ruby Tyco API. Example usage:
+Each binding ships the canonical configuration under `tyco/example.tyco`
+([view on GitHub](https://github.com/typedconfig/tyco-ruby/blob/main/tyco/example.tyco)).
+Load it to mirror the Python README example:
 
 ```ruby
 require_relative 'lib/tyco'
 
-# Parse the bundled example.tyco file
-context = Tyco.load_file('example.tyco')
+config = Tyco.load_file('tyco/example.tyco')
 
-# Access global configuration values
-globals = context['globals']
-environment = globals['environment']
-debug = globals['debug']
-timeout = globals['timeout']
+environment = config['environment']
+debug = config['debug']
+timeout = config['timeout']
 puts "env=#{environment} debug=#{debug} timeout=#{timeout}"
-# ... access objects, etc ...
+
+databases = config['Database']
+primary_db = databases.first
+puts "primary database -> #{primary_db['host']}:#{primary_db['port']}"
 ```
 
-See the [example.tyco](https://github.com/typedconfig/tyco-ruby/blob/main/example.tyco) file for the full configuration example.
-timeout = globals['timeout']
+### Example Tyco File
 
-# Get all instances as hashes
-objects = context['objects']
-databases = objects['Database'] # Array of Database instances
-servers = objects['Server']     # Array of Server instances
+```
+tyco/example.tyco
+```
 
-# Access individual instance fields
-primary_db = databases[0]
-db_host = primary_db['host']
-db_port = primary_db['port']
+```tyco
+# Global configuration with type annotations
+str environment: production
+bool debug: false
+int timeout: 30
+
+# Database configuration struct
+Database:
+ *str name:           # Primary key field (*)
+  str host:
+  int port:
+  str connection_string:
+  # Instances
+  - primary, localhost,    5432, "postgresql://localhost:5432/myapp"
+  - replica, replica-host, 5432, "postgresql://replica-host:5432/myapp"
+
+# Server configuration struct  
+Server:
+ *str name:           # Primary key for referencing
+  int port:
+  str host:
+  ?str description:   # Nullable field (?) - can be null
+  # Server instances
+  - web1,    8080, web1.example.com,    description: "Primary web server"
+  - api1,    3000, api1.example.com,    description: null
+  - worker1, 9000, worker1.example.com, description: "Worker number 1"
+
+# Feature flags array
+str[] features: [auth, analytics, caching]
 ```

@@ -1,6 +1,6 @@
 require 'json'
 require_relative 'tyco/version'
-ext_dir = File.expand_path('../../ext/tyco_ext', __dir__)
+ext_dir = File.expand_path('../ext/tyco_ext', __dir__)
 $LOAD_PATH.unshift(ext_dir) unless $LOAD_PATH.include?(ext_dir)
 require 'tyco_ext'
 
